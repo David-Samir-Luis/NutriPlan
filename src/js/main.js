@@ -81,6 +81,10 @@ const logMealModal = document.querySelector('#log-meal-modal');
 const appLoadingOverlay = document.querySelector('#app-loading-overlay');
 const productsCount = document.querySelector('#products-count');
 const weeklyChart = document.querySelector('#weekly-chart');
+const headerMenuBtn = document.querySelector('#header-menu-btn');
+const sidebarOverlay = document.querySelector('#sidebar-overlay');
+const sidebar = document.querySelector('#sidebar');
+const sidebarCloseBtn = document.querySelector('#sidebar-close-btn');
 
 
 
@@ -92,6 +96,18 @@ const weeklyChart = document.querySelector('#weekly-chart');
 
 
 //^ events
+
+headerMenuBtn.addEventListener('click',function(){
+  sidebarOverlay.classList.add('active');
+  sidebar.classList.add('open');
+})
+//* sidebarCloseBtn
+sidebarCloseBtn.addEventListener('click',function(){
+  sidebarOverlay.classList.remove('active');
+  sidebar.classList.remove('open');
+})
+
+
 //* areaBtns event
 for (const btn of areaBtns) {
   btn.addEventListener('click', function () {
