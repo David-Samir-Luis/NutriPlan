@@ -30,7 +30,7 @@
     <!-- Loading Overlay -->
     <div
       id="app-loading-overlay"
-      class="loading fixed inset-0 bg-white z-[100] flex items-center justify-center transition-opacity duration-500"
+      class=" fixed inset-0 bg-white z-[100] flex items-center justify-center transition-opacity duration-500"
     >
       <div class="text-center">
         <div class="relative w-20 h-20 mx-auto mb-6">
@@ -673,14 +673,6 @@
               </div>
             </div>
           </div>
-        <!-- loading state -->
-        <div id="meals-loading" class="py-12 hidden">
-          <div class="flex items-center justify-center py-12">
-            <div
-              class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"
-            ></div>
-          </div>
-        </div>
           <div id="recipes-grid" class="grid grid-cols-4 gap-5"></div>
         </div>
       </section>
@@ -1156,17 +1148,18 @@
               <i class="fa-solid fa-calendar-week text-indigo-500 mr-2"></i>
               Weekly Overview
             </h3>
-
-            <div
-              id="weekly-chart"
+            <div id="weekly-chart">
+              <div
               class="h-64 bg-gray-50 rounded-xl flex items-center justify-center"
             >
               <!-- Chart placeholder - JS will populate with Plotly -->
-              <div class="text-center text-gray-400">
+              <div  class="text-center text-gray-400">
                 <i class="fa-solid fa-chart-line text-4xl mb-2"></i>
                 <p>Weekly nutrition chart will appear here</p>
               </div>
             </div>
+            </div>
+            
           </div>
 
           <!-- Quick Actions -->

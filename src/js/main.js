@@ -12,6 +12,10 @@ let isGrid = true;
 let loggedItemsList = [];
 let analyzeResult;
 let mealToLog;
+let productsListSearchName = [];
+let totalCountSearchName = 0;
+let dateNow =new Date();
+let  nearestTuesday =new Date(dateNow.setDate(dateNow.getDate() - ((dateNow.getDay() + 5) % 7))).toISOString().split("T")[0];
 
 let navbarText = {
   meals: { header: 'Meals & Recipes', paragraph: 'Discover delicious and nutritious recipes tailored for you' },
@@ -25,6 +29,8 @@ let novaGroupState = { 1: 'Unprocessed', 2: 'Processed Ingredients', 3: 'Process
 let itemType = { recipe: 'Recipe', product: 'Product' };
 let nutritionGradeBgColors = { a: 'bg-green-500', b: 'bg-lime-500', c: 'bg-yellow-500', d: 'bg-orange-500', e: 'bg-red-500', unknown: 'bg-gray-400' }
 let novaGroupBgColors = { 1: 'bg-green-500', 2: 'bg-lime-500', 3: 'bg-orange-500', 4: 'bg-red-500', noColor: '' };
+let searchTypes = { byName: 1, byBarcode: 2, byCategory: 3, noResults: 4 };
+let weekData = {TuesdayDate:nearestTuesday ,today:'0' ,Tue: { kcal: 0, itemsCount: 0 }, Wed: { kcal: 0, itemsCount: 0 }, Thu: { kcal: 0, itemsCount: 0 }, Fri: { kcal: 0, itemsCount: 0 }, Sat: { kcal: 0, itemsCount: 0 }, Sun: { kcal: 0, itemsCount: 0 }, Mon: { kcal: 0, itemsCount: 0 } };
 
 //^ selectors
 const recipesGrid = document.querySelector('#recipes-grid');
@@ -72,6 +78,10 @@ const foodlogDate = document.querySelector('#foodlog-date');
 const logMealBtn = document.querySelector('#log-meal-btn');
 const nutritionFactsContainerMealDettails = document.querySelector('#nutrition-facts-container');
 const logMealModal = document.querySelector('#log-meal-modal');
+const appLoadingOverlay = document.querySelector('#app-loading-overlay');
+const productsCount = document.querySelector('#products-count');
+const weeklyChart = document.querySelector('#weekly-chart');
+
 
 
 
@@ -241,7 +251,9 @@ logMealBtn.addEventListener('click', function () {
   displayLogMealModal();
 })
 
-
+window.addEventListener('load', function () {
+  appLoadingOverlay.classList.add('loading');
+})
 //All Cuisines
 areaFilter();
 updateFoodlogDatePeriodically();
@@ -251,100 +263,171 @@ if (localStorage.getItem("loggedItemsList")) {
   displayLoggedItems();
 }
 
-// // Current URL: https://example.com/page1
-// const newState = { home: 'home' };
-// const newTitle = 'homeeeeeeeeee';
-// const newUrlPath = '/home';
+if (localStorage.getItem("weekData")) {
+  weekData = JSON.parse(localStorage.getItem("weekData"));
+  displayLoggedItems();
+}
 
-// window.history.pushState(newState, newTitle, newUrlPath);
-// The URL in the address bar is now https://example.com/page2
-
-
-
-// // Current URL: https://example.com/page1
-// const newState = { page: 'page2' };
-// const newTitle = 'New Page Title';
-// const newUrlPath = '/page2';
-
-// window.history.pushState(newState, newTitle, newUrlPath);
-// // The URL in the address bar is now https://example.com/page2
 
 //^ functions
 async function areaFilter(area) {
   MealsLoadingState();
+
   let res;
-  if (area) {
-    res = await fetch(`https://nutriplan-api.vercel.app/api/meals/filter?area=${area}&limit=20`)
+  let finalResult
+  try {
+
+    if (area) {
+      res = await fetch(`https://nutriplan-api.vercel.app/api/meals/filter?area=${area}&limit=20`)
+    }
+    else {
+      res = await fetch(`https://nutriplan-api.vercel.app/api/meals/search?q=chicken&page=1&limit=25`)
+    }
+
+    if (res.ok) {
+      finalResult = await res.json();
+      mealsList = finalResult.results;
+      updateRecipesCount(finalResult, area)
+      displayMeals(mealsList)
+    } else {
+      updateRecipesCount(false, area)
+      displayMeals([]);
+      mealsList = [];
+    }
+
+
+  } catch (error) {
+    console.log(error);
+
   }
-  else {
-    res = await fetch(`https://nutriplan-api.vercel.app/api/meals/search?q=chicken&page=1&limit=25`)
-  }
-  let finalResult = await res.json();
-  mealsList = finalResult.results;
-  updateRecipesCount(finalResult, area)
-  displayMeals(mealsList)
 }
 
 async function categoryFilter(category) {
   MealsLoadingState();
-  let res = await fetch(`https://nutriplan-api.vercel.app/api/meals/filter?category=${category}&limit=20`)
-  let finalResult = await res.json();
-  mealsList = finalResult.results;
-  updateRecipesCount(finalResult, category);
-  displayMeals(mealsList);
+  try {
+
+    let res = await fetch(`https://nutriplan-api.vercel.app/api/meals/filter?category=${category}&limit=20`)
+    if (res.ok) {
+      let finalResult = await res.json();
+      mealsList = finalResult.results;
+      updateRecipesCount(finalResult, category);
+      displayMeals(mealsList);
+    } else {
+      updateRecipesCount(false, category);
+      displayMeals([]);
+      mealsList = [];
+    }
+
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 async function GetMealsbySearch(term) {
   MealsLoadingState();
-  if (term) {
-    let res = await fetch(`https://nutriplan-api.vercel.app/api/meals/search?q=${term}&page=1&limit=25`)
-    let finalResult = await res.json();
-    mealsList = finalResult.results;
+  try {
+    if (term) {
+      let res = await fetch(`https://nutriplan-api.vercel.app/api/meals/search?q=${term}&page=1&limit=25`);
+      if (res.ok) {
+        let finalResult = await res.json();
+        mealsList = finalResult.results;
+        updateRecipesCount(finalResult, term, true);
+        displayMeals(mealsList);
+      } else {
+        updateRecipesCount(false, term, true);
+        displayMeals([]);
+        mealsList = [];
+      }
 
-    updateRecipesCount(finalResult, term, true);
-    displayMeals(mealsList);
-  } else {
-    areaFilter();
+    } else {
+      areaFilter();
+    }
+  } catch (error) {
+    console.log(error);
+
   }
 }
 async function getProductsByName(term) {
   productsEmpty.classList.add('hidden');
   productsGrid.innerHTML = '';
   productsLoading.classList.remove('hidden');
-  let res = await fetch(`https://nutriplan-api.vercel.app/api/products/search?q=${term}&page=1&limit=100`)
-  let finalResult = await res.json();
-  productsList = finalResult.results;
+  try {
 
-  productsLoading.classList.add('hidden');
-  displayProducts(productsList);
+    let res = await fetch(`https://nutriplan-api.vercel.app/api/products/search?q=${term}&page=1&limit=100`)
+
+    if (res.ok) {
+      let finalResult = await res.json();
+      productsList = finalResult.results;
+      productsListSearchName = finalResult.results;
+      totalCountSearchName = finalResult.pagination.total;
+      productsLoading.classList.add('hidden');
+      displayProducts(productsList);
+      updateProductsCount(finalResult.pagination.total, term, searchTypes.byName);
+
+    } else {
+      productsList = [];
+      productsListSearchName = [];
+      totalCountSearchName = 0;
+      productsLoading.classList.add('hidden');
+      displayProducts([]);
+      updateProductsCount(0, term, searchTypes.byName);
+
+    }
+
+  } catch (error) {
+    console.log(error);
+  }
 }
 async function getProductByBarcode(term) {
   productsEmpty.classList.add('hidden');
   productsGrid.innerHTML = '';
   productsLoading.classList.remove('hidden');
-  let res = await fetch(`https://nutriplan-api.vercel.app/api/products/barcode/${term}`)
-  let finalResult = await res.json();
-  productsList = finalResult.result;
-  productsLoading.classList.add('hidden');
+  try {
 
-  if (productsList?.name == 'Unknown' || productsList?.name == undefined) {
-    displayProducts([]);
-  } else {
+    let res = await fetch(`https://nutriplan-api.vercel.app/api/products/barcode/${term}`);
 
-    displayProducts(productsList);
-    displayClickedProduct(productsList.barcode);
+    if (res.ok) {
+      let finalResult = await res.json();
+      productsList = finalResult.result;
+      productsLoading.classList.add('hidden');
+      displayProducts(productsList);
+      displayClickedProduct(productsList.barcode);
+      updateProductsCount(1, productsList.name, searchTypes.byBarcode);
+    } else {
+      productsList = [];
+      productsLoading.classList.add('hidden');
+      displayProducts([]);
+      updateProductsCount(0, barcodeInput.value, searchTypes.byBarcode);
+    }
+
+
+  } catch (error) {
+    console.log(error);
   }
 }
 async function getProductByCategory(term) {
   productsEmpty.classList.add('hidden');
   productsGrid.innerHTML = '';
   productsLoading.classList.remove('hidden');
-  let res = await fetch(`https://nutriplan-api.vercel.app/api/products/category/${term}`)
-  let finalResult = await res.json();
-  productsList = finalResult.results;
-  productsLoading.classList.add('hidden');
 
-  displayProducts(productsList);
+  try {
+    let res = await fetch(`https://nutriplan-api.vercel.app/api/products/category/${term}`)
+    if (res.ok) {
+      let finalResult = await res.json();
+      productsList = finalResult.results;
+      productsLoading.classList.add('hidden');
+      displayProducts(productsList);
+      updateProductsCount(finalResult.pagination.total, term, searchTypes.byCategory);
+    } else {
+      productsList = [];
+      productsLoading.classList.add('hidden');
+      displayProducts([]);
+      updateProductsCount(0, term, searchTypes.noResults);
+    }
+
+  } catch (error) {
+
+  }
 
 }
 
@@ -366,15 +449,24 @@ async function getCaloriesMealDetails(meal) {
 
     const data = await res.json();
     return data;
+
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 }
 
 
 function updateRecipesCount(finalResult, term, isSearch) {
-  let total = finalResult.pagination.total;
-  let limit = finalResult.pagination.limit;
+  let total;
+  let limit;
+  if (finalResult) {
+    total = finalResult.pagination.total;
+    limit = finalResult.pagination.limit;
+  } else {
+    total = 0;
+    limit = 0;
+  }
+
   if (isSearch) {
     recipesCount.innerHTML = `Showing ${total < limit ? total : limit} recipes for "${term}"`
   }
@@ -888,11 +980,14 @@ function displayProducts(list) {
 }
 
 function filterProductsbyNutriScore(grade) {
+
   if (grade == 'all') {
-    displayProducts(productsList);
+    displayProducts(productsListSearchName);
+    updateProductsCount(totalCountSearchName, productSearchInput.value, searchTypes.byName);
   } else {
-    let filteredList = productsList?.filter((product) => product.nutritionGrade == grade);
+    let filteredList = productsListSearchName?.filter((product) => product?.nutritionGrade == grade);
     displayProducts(filteredList);
+    updateProductsCount(filteredList.length, productSearchInput.value, searchTypes.byName);
   }
 
 }
@@ -1073,6 +1168,8 @@ function displayLoggedItems() {
                 </div>`;
     clearFoodlogBtn.classList.add('hidden')
     updateTotalNutrition();
+    updateWeeklyOverview();
+
     return;
   }
   for (const element of loggedItemsList) {
@@ -1110,6 +1207,7 @@ function displayLoggedItems() {
   }
   clearFoodlogBtn.classList.remove('hidden');
   updateTotalNutrition();
+  updateWeeklyOverview();
   loggedItems.innerHTML = items;
 }
 
@@ -1176,8 +1274,8 @@ function createItem(clickedProduct = 0) {
       carbs = 3;
     }
     let mealServingsMealModal = document.querySelector('#meal-servings');
-    let servingsMeal=mealServingsMealModal.value;
-    item = new LoggedItemsClass(mealToLog.name,servingsMeal , itemType.recipe, calPerServing * servingsMeal, protein * servingsMeal, carbs * servingsMeal, fat * servingsMeal, mealToLog.thumbnail);
+    let servingsMeal = mealServingsMealModal.value;
+    item = new LoggedItemsClass(mealToLog.name, servingsMeal, itemType.recipe, calPerServing * servingsMeal, protein * servingsMeal, carbs * servingsMeal, fat * servingsMeal, mealToLog.thumbnail);
   }
   loggedItemsList.push(item);
   saveInLocalStorage();
@@ -1211,6 +1309,7 @@ function updateTotalNutrition() {
     fat += item.fat;
     protein += item.protein;
   }
+
   totalCalories.innerHTML = `${Math.floor(calories)} / 2000 kcal`;
   totalCaloriesPercent.style.cssText = `width: ${(Math.floor(calories) * 100 / 2000) < 100 ? (Math.floor(calories) * 100 / 2000) : 100}%`;
   totalCarbs.innerHTML = `${Math.floor(carbs)} / 250 g`;
@@ -1227,7 +1326,21 @@ function getItemIndex(id) {
   }
 }
 function updateFoodlogDatePeriodically() {
-  foodlogDate.innerHTML = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+  const dateToday = new Date().toISOString().split("T")[0];
+
+  if (weekData.today!=dateToday) {
+        weekData.today=dateToday;
+        loggedItemsList=[];
+        foodlogDate.innerHTML = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+
+
+
+    let nearestTuesday=new Date(dateNow.setDate(dateNow.getDate() - ((dateNow.getDay() + 5) % 7))).toISOString().split("T")[0];
+    if (weekData.TuesdayDate!=nearestTuesday) {
+      weekData={TuesdayDate:nearestTuesday ,today:dateToday ,Tue: { kcal: 0, itemsCount: 0 }, Wed: { kcal: 0, itemsCount: 0 }, Thu: { kcal: 0, itemsCount: 0 }, Fri: { kcal: 0, itemsCount: 0 }, Sat: { kcal: 0, itemsCount: 0 }, Sun: { kcal: 0, itemsCount: 0 }, Mon: { kcal: 0, itemsCount: 0 } };
+    }
+  }
+  
   setTimeout(updateFoodlogDatePeriodically, 6000);
 }
 
@@ -1364,4 +1477,130 @@ window.decreaseServings = function () {
   if (mealServingsMealModal.value > 0.5) {
     mealServingsMealModal.value = +mealServingsMealModal.value - 0.5;
   }
+}
+function updateProductsCount(total = 0, term, searchType) {
+  //Found 86 products for "aicha"
+  //Found product: Weetabix
+  //Found 24654 products in breakfast cereals
+
+  switch (searchType) {
+    case searchTypes.byName:
+      if (total == 0) {
+        productsCount.innerHTML = `No products found for "${term}"`;
+      } else {
+        productsCount.innerHTML = `Found ${total} products for "${term}"`;
+      }
+
+      break;
+    case searchTypes.byBarcode:
+      if (total == 0) {
+        productsCount.innerHTML = `No product found with barcode: ${term}`;
+      } else {
+        productsCount.innerHTML = `Found product: ${term}`;
+      }
+      break;
+    case searchTypes.byCategory:
+      productsCount.innerHTML = `Found ${total} products in ${term}`;
+      break;
+    case searchTypes.noResults:
+      productsCount.innerHTML = `Search for products to see results`;
+      break;
+
+  }
+}
+
+function updateWeeklyOverview() {
+  let calories = loggedItemsList.reduce((sum, item) => sum += item.calories, 0);
+  let today = new Date().toLocaleDateString('en-Us', { weekday: 'short' });
+  weekData[today].kcal = Math.floor(calories);
+  weekData[today].itemsCount = loggedItemsList.length;
+  localStorage.setItem('weekData', JSON.stringify(weekData));
+
+const startDate = new Date(weekData.TuesdayDate);
+
+const Days = [
+  new Date(startDate).getDate(),
+  new Date(startDate).setDate(startDate.getDate() + 1),
+  new Date(startDate).setDate(startDate.getDate() + 2),
+  new Date(startDate).setDate(startDate.getDate() + 3),
+  new Date(startDate).setDate(startDate.getDate() + 4),
+  new Date(startDate).setDate(startDate.getDate() + 5),
+  new Date(startDate).setDate(startDate.getDate() + 6)
+].map(d => new Date(d).getDate());
+
+
+  weeklyChart.innerHTML = `
+<div class="grid grid-cols-7 gap-2">
+                        
+                            <div class="text-center ${today==='Tue'?'bg-indigo-100 rounded-xl':''} ">
+                                <p class="text-xs text-gray-500 mb-1">Tue</p>
+                                <p class="text-sm font-medium text-gray-900">${Days[0]}</p>
+                                <div class="mt-2 ${weekData.Tue.kcal>0? 'text-emerald-600':'text-gray-300'} ">
+                                    <p class="text-lg font-bold">${weekData.Tue.kcal}</p>
+                                    <p class="text-xs">kcal</p>
+                                </div>
+                                <p class="${weekData.Tue.itemsCount == 0 ? 'hidden' : ''} text-xs text-gray-400 mt-1">${weekData.Tue.itemsCount} items</p>
+                            </div>
+                        
+                            <div class="text-center ${today==='Wed'?'bg-indigo-100 rounded-xl':''}">
+                                <p class="text-xs text-gray-500 mb-1">Wed</p>
+                                <p class="text-sm font-medium text-gray-900">${Days[1]}</p>
+                                <div class="mt-2 ${weekData.Wed.kcal>0? 'text-emerald-600':'text-gray-300'}">
+                                    <p class="text-lg font-bold">${weekData.Wed.kcal}</p>
+                                    <p class="text-xs">kcal</p>
+                                </div>
+                                <p class="${weekData.Wed.itemsCount == 0 ? 'hidden' : ''} text-xs text-gray-400 mt-1">${weekData.Wed.itemsCount} items</p>
+                            </div>
+                        
+                            <div class="text-center ${today==='Thu'?'bg-indigo-100 rounded-xl':''}">
+                                <p class="text-xs text-gray-500 mb-1">Thu</p>
+                                <p class="text-sm font-medium text-gray-900">${Days[2]}</p>
+                                <div class="mt-2 ${weekData.Thu.kcal>0? 'text-emerald-600':'text-gray-300'}">
+                                    <p class="text-lg font-bold">${weekData.Thu.kcal}</p>
+                                    <p class="text-xs">kcal</p>
+                                </div>
+                                <p class="${weekData.Thu.itemsCount == 0 ? 'hidden' : ''} text-xs text-gray-400 mt-1">${weekData.Thu.itemsCount} items</p>
+                            </div>
+                        
+                            <div class="text-center ${today==='Fri'?'bg-indigo-100 rounded-xl':''}">
+                                <p class="text-xs text-gray-500 mb-1">Fri</p>
+                                <p class="text-sm font-medium text-gray-900">${Days[3]}</p>
+                                <div class="mt-2 ${weekData.Fri.kcal>0? 'text-emerald-600':'text-gray-300'}">
+                                    <p class="text-lg font-bold">${weekData.Fri.kcal}</p>
+                                    <p class="text-xs">kcal</p>
+                                </div>
+                                <p class="${weekData.Fri.itemsCount == 0 ? 'hidden' : ''} text-xs text-gray-400 mt-1">${weekData.Fri.itemsCount} items</p>
+                            </div>
+                        
+                            <div class="text-center ${today==='Sat'?'bg-indigo-100 rounded-xl':''}">
+                                <p class="text-xs text-gray-500 mb-1">Sat</p>
+                                <p class="text-sm font-medium text-gray-900">${Days[4]}</p>
+                                <div class="mt-2 ${weekData.Sat.kcal>0? 'text-emerald-600':'text-gray-300'}">
+                                    <p class="text-lg font-bold">${weekData.Sat.kcal}</p>
+                                    <p class="text-xs">kcal</p>
+                                </div>
+                                <p class="${weekData.Sat.itemsCount == 0 ? 'hidden' : ''} text-xs text-gray-400 mt-1">${weekData.Sat.itemsCount} items</p>
+                            </div>
+
+                            <div class="text-center ${today==='Sun'?'bg-indigo-100 rounded-xl':''}">
+                                <p class="text-xs text-gray-500 mb-1">Sun</p>
+                                <p class="text-sm font-medium text-gray-900">${Days[5]}</p>
+                                <div class="mt-2 ${weekData.Sun.kcal>0? 'text-emerald-600':'text-gray-300'}">
+                                    <p class="text-lg font-bold">${weekData.Sun.kcal}</p>
+                                    <p class="text-xs">kcal</p>
+                                </div>
+                                <p class="${weekData.Sun.itemsCount == 0 ? 'hidden' : ''} text-xs text-gray-400 mt-1">${weekData.Sun.itemsCount} items</p>
+                            </div>
+                        
+                            <div class="text-center ${today==='Mon'?'bg-indigo-100 rounded-xl':''}">
+                                <p class="text-xs text-gray-500 mb-1">Mon</p>
+                                <p class="text-sm font-medium text-gray-900">${Days[6]}</p>
+                                <div class="mt-2 ${weekData.Mon.kcal>0? 'text-emerald-600':'text-gray-300'}">
+                                    <p class="text-lg font-bold">${weekData.Mon.kcal}</p>
+                                    <p class="text-xs">kcal</p>
+                                </div>
+                                <p class="${weekData.Mon.itemsCount == 0 ? 'hidden' : ''} text-xs text-gray-400 mt-1">${weekData.Mon.itemsCount} items</p>
+                            </div>
+                        
+                    </div>`
 }
