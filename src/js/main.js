@@ -14,8 +14,8 @@ let analyzeResult;
 let mealToLog;
 let productsListSearchName = [];
 let totalCountSearchName = 0;
-let dateNow =new Date();
-let  nearestTuesday =new Date(dateNow.setDate(dateNow.getDate() - ((dateNow.getDay() + 5) % 7))).toISOString().split("T")[0];
+let dateNow = new Date();
+let nearestTuesday = new Date(dateNow.setDate(dateNow.getDate() - ((dateNow.getDay() + 5) % 7))).toISOString().split("T")[0];
 
 let navbarText = {
   meals: { header: 'Meals & Recipes', paragraph: 'Discover delicious and nutritious recipes tailored for you' },
@@ -30,7 +30,7 @@ let itemType = { recipe: 'Recipe', product: 'Product' };
 let nutritionGradeBgColors = { a: 'bg-green-500', b: 'bg-lime-500', c: 'bg-yellow-500', d: 'bg-orange-500', e: 'bg-red-500', unknown: 'bg-gray-400' }
 let novaGroupBgColors = { 1: 'bg-green-500', 2: 'bg-lime-500', 3: 'bg-orange-500', 4: 'bg-red-500', noColor: '' };
 let searchTypes = { byName: 1, byBarcode: 2, byCategory: 3, noResults: 4 };
-let weekData = {TuesdayDate:nearestTuesday ,today:'0' ,Tue: { kcal: 0, itemsCount: 0 }, Wed: { kcal: 0, itemsCount: 0 }, Thu: { kcal: 0, itemsCount: 0 }, Fri: { kcal: 0, itemsCount: 0 }, Sat: { kcal: 0, itemsCount: 0 }, Sun: { kcal: 0, itemsCount: 0 }, Mon: { kcal: 0, itemsCount: 0 } };
+let weekData = { TuesdayDate: nearestTuesday, today: '0', Tue: { kcal: 0, itemsCount: 0 }, Wed: { kcal: 0, itemsCount: 0 }, Thu: { kcal: 0, itemsCount: 0 }, Fri: { kcal: 0, itemsCount: 0 }, Sat: { kcal: 0, itemsCount: 0 }, Sun: { kcal: 0, itemsCount: 0 }, Mon: { kcal: 0, itemsCount: 0 } };
 
 //^ selectors
 const recipesGrid = document.querySelector('#recipes-grid');
@@ -97,12 +97,12 @@ const sidebarCloseBtn = document.querySelector('#sidebar-close-btn');
 
 //^ events
 
-headerMenuBtn.addEventListener('click',function(){
+headerMenuBtn.addEventListener('click', function () {
   sidebarOverlay.classList.add('active');
   sidebar.classList.add('open');
 })
 //* sidebarCloseBtn
-sidebarCloseBtn.addEventListener('click',function(){
+sidebarCloseBtn.addEventListener('click', function () {
   sidebarOverlay.classList.remove('active');
   sidebar.classList.remove('open');
 })
@@ -1344,19 +1344,23 @@ function getItemIndex(id) {
 function updateFoodlogDatePeriodically() {
   const dateToday = new Date().toISOString().split("T")[0];
 
-  if (weekData.today!=dateToday) {
-        weekData.today=dateToday;
-        loggedItemsList=[];
-        foodlogDate.innerHTML = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+  if (weekData.today != dateToday) {
+    weekData.today = dateToday;
+    localStorage.setItem('weekData', JSON.stringify(weekData));
+
+    loggedItemsList = [];
+    saveInLocalStorage();
+    foodlogDate.innerHTML = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 
 
 
-    let nearestTuesday=new Date(dateNow.setDate(dateNow.getDate() - ((dateNow.getDay() + 5) % 7))).toISOString().split("T")[0];
-    if (weekData.TuesdayDate!=nearestTuesday) {
-      weekData={TuesdayDate:nearestTuesday ,today:dateToday ,Tue: { kcal: 0, itemsCount: 0 }, Wed: { kcal: 0, itemsCount: 0 }, Thu: { kcal: 0, itemsCount: 0 }, Fri: { kcal: 0, itemsCount: 0 }, Sat: { kcal: 0, itemsCount: 0 }, Sun: { kcal: 0, itemsCount: 0 }, Mon: { kcal: 0, itemsCount: 0 } };
+    let nearestTuesday = new Date(dateNow.setDate(dateNow.getDate() - ((dateNow.getDay() + 5) % 7))).toISOString().split("T")[0];
+    if (weekData.TuesdayDate != nearestTuesday) {
+      weekData = { TuesdayDate: nearestTuesday, today: dateToday, Tue: { kcal: 0, itemsCount: 0 }, Wed: { kcal: 0, itemsCount: 0 }, Thu: { kcal: 0, itemsCount: 0 }, Fri: { kcal: 0, itemsCount: 0 }, Sat: { kcal: 0, itemsCount: 0 }, Sun: { kcal: 0, itemsCount: 0 }, Mon: { kcal: 0, itemsCount: 0 } };
+      localStorage.setItem('weekData', JSON.stringify(weekData));
     }
   }
-  
+
   setTimeout(updateFoodlogDatePeriodically, 6000);
 }
 
@@ -1532,86 +1536,84 @@ function updateWeeklyOverview() {
   weekData[today].itemsCount = loggedItemsList.length;
   localStorage.setItem('weekData', JSON.stringify(weekData));
 
-const startDate = new Date(weekData.TuesdayDate);
+  const startDate = new Date(weekData.TuesdayDate);
 
 const Days = [
-  new Date(startDate).getDate(),
-  new Date(startDate).setDate(startDate.getDate() + 1),
-  new Date(startDate).setDate(startDate.getDate() + 2),
-  new Date(startDate).setDate(startDate.getDate() + 3),
-  new Date(startDate).setDate(startDate.getDate() + 4),
-  new Date(startDate).setDate(startDate.getDate() + 5),
-  new Date(startDate).setDate(startDate.getDate() + 6)
-].map(d => new Date(d).getDate());
-
+  0, 1, 2, 3, 4, 5, 6
+].map(offset => {
+  const d = new Date(startDate);
+  d.setDate(startDate.getDate() + offset);
+  return d.getDate();
+});
+console.log(Days);
 
   weeklyChart.innerHTML = `
 <div class="grid grid-cols-7 gap-2">
                         
-                            <div class="text-center ${today==='Tue'?'bg-indigo-100 rounded-xl':''} ">
+                            <div class="text-center ${today === 'Tue' ? 'bg-indigo-100 rounded-xl' : ''} ">
                                 <p class="text-xs text-gray-500 mb-1">Tue</p>
                                 <p class="text-sm font-medium text-gray-900">${Days[0]}</p>
-                                <div class="mt-2 ${weekData.Tue.kcal>0? 'text-emerald-600':'text-gray-300'} ">
+                                <div class="mt-2 ${weekData.Tue.kcal > 0 ? 'text-emerald-600' : 'text-gray-300'} ">
                                     <p class="text-lg font-bold">${weekData.Tue.kcal}</p>
                                     <p class="text-xs">kcal</p>
                                 </div>
                                 <p class="${weekData.Tue.itemsCount == 0 ? 'hidden' : ''} text-xs text-gray-400 mt-1">${weekData.Tue.itemsCount} items</p>
                             </div>
                         
-                            <div class="text-center ${today==='Wed'?'bg-indigo-100 rounded-xl':''}">
+                            <div class="text-center ${today === 'Wed' ? 'bg-indigo-100 rounded-xl' : ''}">
                                 <p class="text-xs text-gray-500 mb-1">Wed</p>
                                 <p class="text-sm font-medium text-gray-900">${Days[1]}</p>
-                                <div class="mt-2 ${weekData.Wed.kcal>0? 'text-emerald-600':'text-gray-300'}">
+                                <div class="mt-2 ${weekData.Wed.kcal > 0 ? 'text-emerald-600' : 'text-gray-300'}">
                                     <p class="text-lg font-bold">${weekData.Wed.kcal}</p>
                                     <p class="text-xs">kcal</p>
                                 </div>
                                 <p class="${weekData.Wed.itemsCount == 0 ? 'hidden' : ''} text-xs text-gray-400 mt-1">${weekData.Wed.itemsCount} items</p>
                             </div>
                         
-                            <div class="text-center ${today==='Thu'?'bg-indigo-100 rounded-xl':''}">
+                            <div class="text-center ${today === 'Thu' ? 'bg-indigo-100 rounded-xl' : ''}">
                                 <p class="text-xs text-gray-500 mb-1">Thu</p>
                                 <p class="text-sm font-medium text-gray-900">${Days[2]}</p>
-                                <div class="mt-2 ${weekData.Thu.kcal>0? 'text-emerald-600':'text-gray-300'}">
+                                <div class="mt-2 ${weekData.Thu.kcal > 0 ? 'text-emerald-600' : 'text-gray-300'}">
                                     <p class="text-lg font-bold">${weekData.Thu.kcal}</p>
                                     <p class="text-xs">kcal</p>
                                 </div>
                                 <p class="${weekData.Thu.itemsCount == 0 ? 'hidden' : ''} text-xs text-gray-400 mt-1">${weekData.Thu.itemsCount} items</p>
                             </div>
                         
-                            <div class="text-center ${today==='Fri'?'bg-indigo-100 rounded-xl':''}">
+                            <div class="text-center ${today === 'Fri' ? 'bg-indigo-100 rounded-xl' : ''}">
                                 <p class="text-xs text-gray-500 mb-1">Fri</p>
                                 <p class="text-sm font-medium text-gray-900">${Days[3]}</p>
-                                <div class="mt-2 ${weekData.Fri.kcal>0? 'text-emerald-600':'text-gray-300'}">
+                                <div class="mt-2 ${weekData.Fri.kcal > 0 ? 'text-emerald-600' : 'text-gray-300'}">
                                     <p class="text-lg font-bold">${weekData.Fri.kcal}</p>
                                     <p class="text-xs">kcal</p>
                                 </div>
                                 <p class="${weekData.Fri.itemsCount == 0 ? 'hidden' : ''} text-xs text-gray-400 mt-1">${weekData.Fri.itemsCount} items</p>
                             </div>
                         
-                            <div class="text-center ${today==='Sat'?'bg-indigo-100 rounded-xl':''}">
+                            <div class="text-center ${today === 'Sat' ? 'bg-indigo-100 rounded-xl' : ''}">
                                 <p class="text-xs text-gray-500 mb-1">Sat</p>
                                 <p class="text-sm font-medium text-gray-900">${Days[4]}</p>
-                                <div class="mt-2 ${weekData.Sat.kcal>0? 'text-emerald-600':'text-gray-300'}">
+                                <div class="mt-2 ${weekData.Sat.kcal > 0 ? 'text-emerald-600' : 'text-gray-300'}">
                                     <p class="text-lg font-bold">${weekData.Sat.kcal}</p>
                                     <p class="text-xs">kcal</p>
                                 </div>
                                 <p class="${weekData.Sat.itemsCount == 0 ? 'hidden' : ''} text-xs text-gray-400 mt-1">${weekData.Sat.itemsCount} items</p>
                             </div>
 
-                            <div class="text-center ${today==='Sun'?'bg-indigo-100 rounded-xl':''}">
+                            <div class="text-center ${today === 'Sun' ? 'bg-indigo-100 rounded-xl' : ''}">
                                 <p class="text-xs text-gray-500 mb-1">Sun</p>
                                 <p class="text-sm font-medium text-gray-900">${Days[5]}</p>
-                                <div class="mt-2 ${weekData.Sun.kcal>0? 'text-emerald-600':'text-gray-300'}">
+                                <div class="mt-2 ${weekData.Sun.kcal > 0 ? 'text-emerald-600' : 'text-gray-300'}">
                                     <p class="text-lg font-bold">${weekData.Sun.kcal}</p>
                                     <p class="text-xs">kcal</p>
                                 </div>
                                 <p class="${weekData.Sun.itemsCount == 0 ? 'hidden' : ''} text-xs text-gray-400 mt-1">${weekData.Sun.itemsCount} items</p>
                             </div>
                         
-                            <div class="text-center ${today==='Mon'?'bg-indigo-100 rounded-xl':''}">
+                            <div class="text-center ${today === 'Mon' ? 'bg-indigo-100 rounded-xl' : ''}">
                                 <p class="text-xs text-gray-500 mb-1">Mon</p>
                                 <p class="text-sm font-medium text-gray-900">${Days[6]}</p>
-                                <div class="mt-2 ${weekData.Mon.kcal>0? 'text-emerald-600':'text-gray-300'}">
+                                <div class="mt-2 ${weekData.Mon.kcal > 0 ? 'text-emerald-600' : 'text-gray-300'}">
                                     <p class="text-lg font-bold">${weekData.Mon.kcal}</p>
                                     <p class="text-xs">kcal</p>
                                 </div>
