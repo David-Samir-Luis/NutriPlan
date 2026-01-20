@@ -270,9 +270,6 @@ logMealBtn.addEventListener('click', function () {
 window.addEventListener('load', function () {
   appLoadingOverlay.classList.add('loading');
 })
-//All Cuisines
-areaFilter();
-updateFoodlogDatePeriodically();
 
 if (localStorage.getItem("loggedItemsList")) {
   loggedItemsList = JSON.parse(localStorage.getItem("loggedItemsList"));
@@ -283,6 +280,10 @@ if (localStorage.getItem("weekData")) {
   weekData = JSON.parse(localStorage.getItem("weekData"));
   displayLoggedItems();
 }
+
+//All Cuisines
+areaFilter();
+updateFoodlogDatePeriodically();
 
 
 //^ functions
@@ -1349,6 +1350,7 @@ function updateFoodlogDatePeriodically() {
     localStorage.setItem('weekData', JSON.stringify(weekData));
 
     loggedItemsList = [];
+    
     saveInLocalStorage();
     foodlogDate.innerHTML = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 
@@ -1358,6 +1360,7 @@ function updateFoodlogDatePeriodically() {
     if (weekData.TuesdayDate != nearestTuesday) {
       weekData = { TuesdayDate: nearestTuesday, today: dateToday, Tue: { kcal: 0, itemsCount: 0 }, Wed: { kcal: 0, itemsCount: 0 }, Thu: { kcal: 0, itemsCount: 0 }, Fri: { kcal: 0, itemsCount: 0 }, Sat: { kcal: 0, itemsCount: 0 }, Sun: { kcal: 0, itemsCount: 0 }, Mon: { kcal: 0, itemsCount: 0 } };
       localStorage.setItem('weekData', JSON.stringify(weekData));
+      
     }
   }
 
@@ -1545,7 +1548,6 @@ const Days = [
   d.setDate(startDate.getDate() + offset);
   return d.getDate();
 });
-console.log(Days);
 
   weeklyChart.innerHTML = `
 <div class="grid grid-cols-7 gap-2">
