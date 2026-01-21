@@ -277,13 +277,9 @@ if (localStorage.getItem("loggedItemsList")) {
   displayLoggedItems();
 }
 
-// if (localStorage.getItem("weekData")) {
-  
-//   displayLoggedItems();
-// }
 
-//All Cuisines
 areaFilter();
+foodlogDate.innerHTML = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 updateFoodlogDatePeriodically();
 
 
