@@ -1,94 +1,89 @@
 # NutriPlan 🥗
 
-> A comprehensive Food, Nutrition & Fitness Planner web application built with vanilla JavaScript
+> A Food, Nutrition & Fitness Planner web application for discovering recipes and tracking nutrition.
 
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://david-samir-luis.github.io/NutriPlan/)
-[![GitHub](https://img.shields.io/badge/github-repository-blue)](https://github.com/David-Samir-Luis/NutriPlan)
 [![JavaScript](https://img.shields.io/badge/javascript-ES6+-yellow)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
-## 📋 Table of Contents
+## 📖 About
 
-- [Overview](#overview)
-- [Features](#features)
-- [Demo](#demo)
-- [Technologies](#technologies)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Usage](#usage)
-- [API Reference](#api-reference)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
-
-## 🎯 Overview
-
-NutriPlan is a modern web application designed to help users discover recipes, track nutrition, and maintain a healthy lifestyle. Built with vanilla JavaScript and powered by TheMealDB API, it provides an intuitive interface for meal planning and nutritional tracking.
-
-### Key Highlights
-
-- 🍳 **1000+ Recipes** from international cuisines
-- 📊 **Real-time Nutrition Tracking** with visual progress indicators
-- 🔍 **Smart Search** with category filtering
-- 📱 **Responsive Design** optimized for all devices
-- 🎨 **Modern UI/UX** with smooth animations and transitions
+NutriPlan is a web application that helps users discover recipes, track nutrition, and maintain a healthy lifestyle. Built with vanilla JavaScript and powered by TheMealDB API, it provides access to thousands of recipes with detailed nutritional information, meal logging capabilities, and weekly nutrition tracking.
 
 ## ✨ Features
 
 ### 🍽️ Meals & Recipes
-
-- **Dynamic Recipe Discovery**: Browse through a vast collection of recipes fetched from TheMealDB API
-- **Category Filtering**: Filter by 12+ meal types (Beef, Chicken, Seafood, Vegan, Vegetarian, Dessert, etc.)
-- **Smart Search**: Real-time search functionality to find recipes instantly
-- **Cuisine Filtering**: Explore recipes from 15+ international cuisines
-- **Recipe Details**: View comprehensive information including:
-  - Ingredients list with measurements
-  - Step-by-step cooking instructions
-  - Video tutorials
-  - Nutritional information
-  - Cooking time and servings
+- Browse 1000+ recipes from international cuisines
+- Filter by 12 meal categories (Beef, Chicken, Seafood, Vegan, Vegetarian, Desserts, etc.)
+- Real-time search functionality
+- Detailed recipe view with ingredients, instructions, and video tutorials
+- One-click meal logging
 
 ### 🔍 Product Scanner
+- Search packaged food products by name or barcode
+- Filter by Nutri-Score ratings (A-E)
+- Browse by food categories (Cereals, Beverages, Snacks, Dairy, etc.)
+- View detailed nutrition facts
 
-- **Product Search**: Search for packaged food products by name
-- **Barcode Lookup**: Look up products using barcode numbers
-- **Nutri-Score Filtering**: Filter products by nutrition quality ratings (A-E)
-- **Category Browsing**: Browse by food categories (Cereals, Beverages, Snacks, etc.)
-- **Nutrition Facts**: Access detailed nutritional information for each product
+### 📊 Food Log & Tracking
+- Track daily calories, protein, carbs, and fat
+- Visual progress bars for nutrition goals
+- Weekly nutrition analytics with charts
+- Log meals directly from recipes
+- View and manage all logged items
 
-### 📈 Food Log & Tracking
+## 🛠️ Built With
 
-- **Daily Nutrition Tracker**: Monitor daily intake of:
-  - Calories (2000 kcal goal)
-  - Protein (50g goal)
-  - Carbohydrates (250g goal)
-  - Fat (65g goal)
-- **Visual Progress Bars**: Track your progress towards daily goals
-- **Meal Logging**: One-click logging of meals from recipes
-- **Weekly Overview**: View weekly nutrition trends with charts
-- **Clear All Function**: Reset daily logs as needed
+- **JavaScript ES6+** - Modules, async/await, modern features
+- **HTML5 & CSS3** - Semantic markup and modern styling
+- **TheMealDB API** - Recipe and meal data
+- **GitHub Pages** - Hosting and deployment
 
-## 🎥 Demo
+## 🚀 Getting Started
 
-**Live Application**: [https://david-samir-luis.github.io/NutriPlan/](https://david-samir-luis.github.io/NutriPlan/)
+### Installation
 
-### Screenshots
+1. Clone the repository
+   ```bash
+   git clone https://github.com/David-Samir-Luis/NutriPlan.git
+   cd NutriPlan
+   ```
 
-*Coming soon*
+2. Open `index.html` in your browser or use a local server
+   ```bash
+   python -m http.server 8000
+   # or
+   npx http-server
+   ```
 
-## 🛠️ Technologies
+3. Navigate to `http://localhost:8000`
 
-### Frontend
-- **JavaScript ES6+**: Modules, async/await, template literals, destructuring
-- **HTML5**: Semantic markup
-- **CSS3**: Custom properties, flexbox, grid, animations
+**No build process or dependencies required!**
 
-### APIs
-- **TheMealDB API**: Recipe and meal data
+## 📖 How To Use
 
-### Tools & Deployment
-- **Git**: Version control
-- **GitHub Pages**: Hosting and deployment
-- **ES6 Modules**: Code organization and modularity
+### Browsing Recipes
+1. Use the search bar to find recipes by name
+2. Click category cards to filter by meal type
+3. Select cuisine from dropdown to filter by region
+4. Click any recipe card to view full details
+
+### Logging Meals
+1. Open a recipe detail modal
+2. Click "Log This Meal" button
+3. View logged meals in the Food Log page
+4. Track your daily nutrition progress
+
+### Product Scanner
+1. Navigate to Product Scanner page
+2. Search by product name or enter barcode number
+3. Filter results by Nutri-Score rating
+4. Browse by food categories
+
+### Tracking Nutrition
+1. Go to Food Log page
+2. Monitor daily intake vs. goals (2000 kcal, 50g protein, 250g carbs, 65g fat)
+3. View weekly nutrition trends
+4. Use "Clear All" to reset daily log
 
 ## 📁 Project Structure
 
@@ -109,177 +104,40 @@ NutriPlan/
             └── components.js # UI components
 ```
 
-### Architecture
-
-The project follows a modular architecture with clear separation of concerns:
-
-- **API Layer** (`api/mealdb.js`): Handles all external API calls
-- **State Management** (`state/appState.js`): Centralized application state
-- **UI Components** (`ui/components.js`): Reusable interface components
-- **Main Controller** (`main.js`): Orchestrates the application flow
-
-## 🚀 Installation
-
-### Prerequisites
-
-- Modern web browser (Chrome, Firefox, Safari, Edge)
-- Text editor or IDE (VS Code recommended)
-- Basic knowledge of HTML, CSS, and JavaScript
-
-### Steps
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/David-Samir-Luis/NutriPlan.git
-   ```
-
-2. **Navigate to the project directory**
-   ```bash
-   cd NutriPlan
-   ```
-
-3. **Open in browser**
-   - Simply open `index.html` in your web browser, or
-   - Use a local development server:
-   ```bash
-   # Using Python
-   python -m http.server 8000
-   
-   # Using Node.js
-   npx serve
-   ```
-
-4. **Access the application**
-   - Open your browser and navigate to `http://localhost:8000`
-
-## 💡 Usage
-
-### Browsing Recipes
-
-1. Navigate to the **Meals & Recipes** page (default view)
-2. Browse through recipe categories or use the search bar
-3. Click on any category card to filter recipes
-4. Click on a recipe card to view detailed information
-
-### Searching for Meals
-
-1. Use the search bar at the top of the Meals page
-2. Type your desired meal name (e.g., "chicken", "pasta")
-3. Results update dynamically as you type
-
-### Logging Meals
-
-1. Click on any recipe card to open the details modal
-2. Click the **"Log This Meal"** button
-3. View your logged meals in the **Food Log** page
-4. Monitor your daily nutrition progress
-
-### Product Scanning
-
-1. Navigate to the **Product Scanner** page
-2. Enter a product name or barcode number
-3. Filter results using Nutri-Score ratings
-4. Browse by food categories for quick access
-
-### Tracking Nutrition
-
-1. Go to the **Food Log** page
-2. View your daily nutrition progress
-3. Check the weekly overview chart
-4. Use **"Clear All"** to reset your daily log
+**Architecture**: Modular design with separated API layer, state management, and UI components using ES6 modules.
 
 ## 🔗 API Reference
 
-### TheMealDB API
+**TheMealDB API**: `https://www.themealdb.com/api/json/v1/1/`
 
-Base URL: `https://www.themealdb.com/api/json/v1/1/`
+| Endpoint | Purpose |
+|----------|---------|
+| `/categories.php` | Get all meal categories |
+| `/search.php?s={query}` | Search recipes by name |
+| `/lookup.php?i={id}` | Get recipe details |
+| `/filter.php?c={category}` | Filter by category |
+| `/filter.php?a={area}` | Filter by cuisine |
 
-#### Endpoints Used
+## 🎥 Demo
 
-| Endpoint | Description | Usage |
-|----------|-------------|-------|
-| `/categories.php` | Get all meal categories | Fetch category list for filtering |
-| `/search.php?s={query}` | Search meals by name | Implement search functionality |
-| `/lookup.php?i={id}` | Get meal details by ID | Display recipe details |
-| `/filter.php?c={category}` | Filter by category | Category-based filtering |
-| `/filter.php?a={area}` | Filter by cuisine | Cuisine-based filtering |
-| `/random.php` | Get random meal | Featured/random recipes |
-
-#### Example Request
-
-```javascript
-// Fetch all categories
-const response = await fetch('https://www.themealdb.com/api/json/v1/1/categories.php');
-const data = await response.json();
-console.log(data.categories);
-```
-
-## 🎨 Key Features Implementation
-
-### Dynamic Content Loading
-- Implemented skeleton loading states for optimal UX
-- Smooth transitions between loading and loaded states
-- Error handling for failed API requests
-
-### State Management
-- Centralized state management without frameworks
-- Reactive updates to UI based on state changes
-- Persistent state across page navigation
-
-### Responsive Design
-- Mobile-first approach
-- Flexible grid layouts
-- Responsive images and typography
-
-## 🤝 Contributing
-
-Contributions are welcome! Here's how you can help:
-
-1. **Fork the repository**
-2. **Create a feature branch**
-   ```bash
-   git checkout -b feature/AmazingFeature
-   ```
-3. **Commit your changes**
-   ```bash
-   git commit -m 'Add some AmazingFeature'
-   ```
-4. **Push to the branch**
-   ```bash
-   git push origin feature/AmazingFeature
-   ```
-5. **Open a Pull Request**
-
-### Contribution Guidelines
-
-- Follow the existing code style
-- Write clear commit messages
-- Update documentation as needed
-- Test your changes thoroughly
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+**Live App**: [https://david-samir-luis.github.io/NutriPlan/](https://david-samir-luis.github.io/NutriPlan/)
 
 ## 👨‍💻 Contact
 
 **David Samir Luis**
-
 - GitHub: [@David-Samir-Luis](https://github.com/David-Samir-Luis)
-- Project Link: [https://github.com/David-Samir-Luis/NutriPlan](https://github.com/David-Samir-Luis/NutriPlan)
+- Project: [NutriPlan Repository](https://github.com/David-Samir-Luis/NutriPlan)
 
 ## 🙏 Acknowledgments
 
-- **TheMealDB** for providing the free recipe API
-- My instructor for guidance and mentorship throughout the project
-- The web development community for inspiration and best practices
-
-## 📊 Project Status
-
-🟢 **Active Development** - Open to contributions and feedback
+- **TheMealDB** for the free recipe API
 
 ---
 
-⭐ **If you find this project useful, please consider giving it a star!**
+<div align="center">
 
-Made with ❤️ by David Samir Luis
+⭐ **Star this repo if you find it useful!**
+
+Made with ❤️ and JavaScript
+
+</div>
