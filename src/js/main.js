@@ -273,13 +273,14 @@ window.addEventListener('load', function () {
 
 if (localStorage.getItem("loggedItemsList")) {
   loggedItemsList = JSON.parse(localStorage.getItem("loggedItemsList"));
-  displayLoggedItems();
-}
-
-if (localStorage.getItem("weekData")) {
   weekData = JSON.parse(localStorage.getItem("weekData"));
   displayLoggedItems();
 }
+
+// if (localStorage.getItem("weekData")) {
+  
+//   displayLoggedItems();
+// }
 
 //All Cuisines
 areaFilter();
