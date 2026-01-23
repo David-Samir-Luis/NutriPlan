@@ -1359,9 +1359,9 @@ function updateFoodlogDatePeriodically() {
       localStorage.setItem('weekData', JSON.stringify(weekData));
       
     }
+    displayLoggedItems();
   }
-
-  setTimeout(updateFoodlogDatePeriodically, 6000);
+  setTimeout(updateFoodlogDatePeriodically, 60000);
 }
 
 function disableLogMealBtn() {
